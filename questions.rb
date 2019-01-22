@@ -23,7 +23,7 @@ class Question
     data.map { |datum| Question.new(datum) }
   end
 
-  def self.find_by_author(user_id)
+  def self.find_by_author_id(user_id)
     data = QuestionsDatabase.instance.execute(<<-SQL, user_id)
       SELECT *
       FROM questions
@@ -70,6 +70,14 @@ class User
     @lname = options['lname']
   end
   
+  def authored_questions
+    Question.find_by_author_id(@id)
+  end
+
+  def authored_replies
+    Reply.find_by_user_id(@id)
+  end
+
 end
 
 class QuestionFollow
