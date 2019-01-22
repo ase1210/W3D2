@@ -210,13 +210,25 @@ end
 
 class QuestionLike
 
-  def self.find_by_question(question_id)
+  def self.likers_for_question_id(question_id)
     data = QuestionsDatabase.instance.execute(<<-SQL, question_id)
-      SELECT *
+      SELECT users.id, users.fname, users.lname
       FROM question_likes
+      JOIN users ON question_likes.user_id = users.id
       WHERE question_id = ?
     SQL
-    data.map { |datum| QuestionLike.new(datum) }
+    data.map { |datum| User.new(datum) }
+  end
+
+  def self.num_likes_for_question_id(question_id)
+    data = QuestionsDatabase.instance.execute(<<-SQL, question_id)
+      SELECT COUNT(user_id) AS count
+      FROM question_likes
+      WHERE question_id = ?
+      GROUP BY question_id
+    SQL
+    return 0 if data.empty?
+    data[0]['count']
   end
 
   attr_accessor :question_id, :user_id
