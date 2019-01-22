@@ -50,6 +50,9 @@ class Question
     Reply.find_by_question_id(@id)
   end
   
+  def followers
+    QuestionFollow.followers_for_question_id(@id)
+  end
 end
 
 class User
@@ -88,18 +91,12 @@ class User
     Reply.find_by_user_id(@id)
   end
 
+  def followed_questions
+    QuestionFollow.followed_questions_for_user_id(@id)
+  end
 end
 
 class QuestionFollow
-
-  # def self.find_by_question(question_id)
-  #   data = QuestionsDatabase.instance.execute(<<-SQL, question_id)
-  #     SELECT *
-  #     FROM question_follows
-  #     WHERE question_id = ?
-  #   SQL
-  #   data.map { |datum| QuestionFollow.new(datum) }
-  # end
 
   def self.followers_for_question_id(question_id)
     user_ids = QuestionsDatabase.instance.execute(<<-SQL, question_id)
