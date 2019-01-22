@@ -33,6 +33,10 @@ class Question
     data.map { |datum| Question.new(datum) }
   end
 
+  def self.most_followed(n)
+    QuestionFollow.most_followed_questions(n)
+  end
+
   attr_accessor :title, :body, :user_id
 
   def initialize(options)
@@ -115,6 +119,19 @@ class QuestionFollow
       WHERE questions.user_id = ?
     SQL
     data.map { |datum| Question.new(datum) }
+  end
+  
+  def self.most_followed_questions(n)
+    data = QuestionsDatabase.instance.execute(<<-SQL, n)
+      SELECT DISTINCT questions.id, questions.title, questions.body, questions.user_id
+      FROM question_follows
+      JOIN questions ON questions.id = question_follows.question_id 
+      GROUP BY question_follows.question_id
+      ORDER BY SUM(question_follows.user_id) DESC
+      LIMIT ?
+    SQL
+    data.map { |datum| Question.new(datum) }
+
   end
 
   attr_accessor :question_id, :user_id
