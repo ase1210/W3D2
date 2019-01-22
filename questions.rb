@@ -33,3 +33,24 @@ class Questions
   end
   
 end
+
+class Users
+
+  def self.find_by_name(fname, lname)
+    data = QuestionsDatabase.instance.execute(<<-SQL, fname, lname)
+      SELECT *
+      FROM users
+      WHERE fname = ? AND lname = ?
+    SQL
+    data.map { |datum| Users.new(datum) }
+  end
+
+  attr_accessor :fname, :lname
+
+  def initialize(options)
+    @id = options['id']
+    @fname = options['fname']
+    @lname = options['lname']
+  end
+  
+end
