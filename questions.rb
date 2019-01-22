@@ -37,6 +37,10 @@ class Question
     QuestionFollow.most_followed_questions(n)
   end
 
+  def self.most_liked(n)
+    QuestionLike.most_liked_questions(n)
+  end
+
   attr_accessor :title, :body, :user_id
 
   def initialize(options)
@@ -143,7 +147,6 @@ class QuestionFollow
       LIMIT ?
     SQL
     data.map { |datum| Question.new(datum) }
-
   end
 
   attr_accessor :question_id, :user_id
@@ -249,6 +252,18 @@ class QuestionLike
       FROM question_likes
       JOIN questions ON question_likes.question_id = questions.id
       WHERE question_likes.user_id = ?
+    SQL
+    data.map { |datum| Question.new(datum) }
+  end
+
+  def self.most_liked_questions(n)
+    data = QuestionsDatabase.instance.execute(<<-SQL, n)
+      SELECT DISTINCT questions.id, questions.title, questions.body, questions.user_id
+      FROM question_likes
+      JOIN questions ON questions.id = question_likes.question_id 
+      GROUP BY question_likes.question_id
+      ORDER BY SUM(question_likes.user_id) DESC
+      LIMIT ?
     SQL
     data.map { |datum| Question.new(datum) }
   end
