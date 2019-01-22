@@ -107,17 +107,17 @@ class QuestionFollow
       FROM question_follows
       WHERE question_id = ?
     SQL
-    #byebug
     user_ids.map { |user_id| User.find_by_id(user_id.values[0]) }.flatten
   end
 
   def self.followed_questions_for_user_id(user_id)
-    question_ids = Questiquestion_idsbase.instance.execute(<<-SQL, user_id)
-      SELECT question_id
+    data = QuestionsDatabase.instance.execute(<<-SQL, user_id)
+      SELECT DISTINCT questions.id, questions.title, questions.body, questions.user_id
       FROM question_follows
-      WHERE user_id = ?
+      JOIN questions ON questions.user_id = question_follows.user_id 
+      WHERE questions.user_id = ?
     SQL
-    question_ids.map { |question_id| Question.find_by_id(question_id.values[0]) }.flatten
+    data.map { |datum| Question.new(datum) }
   end
 
   attr_accessor :question_id, :user_id
