@@ -94,3 +94,26 @@ class QuestionLikes
   end
   
 end
+
+class Replies
+
+  def self.find_by_id(id)
+    data = QuestionsDatabase.instance.execute(<<-SQL, id)
+      SELECT *
+      FROM replies
+      WHERE id = ?
+    SQL
+    data.map { |datum| Replies.new(datum) }
+  end
+
+  attr_accessor :question_id, :user_id, :body, :parent_id
+
+  def initialize(options)
+    @id = options['id']
+    @body = options['body']
+    @question_id = options['question_id']
+    @parent_id = options['parent_id']
+    @user_id = options['user_id']
+  end
+  
+end
