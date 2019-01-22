@@ -54,9 +54,9 @@ VALUES
 INSERT INTO
   questions (title, body, user_id)
 VALUES
-  ("Dogs??", "What are they all about?", (SELECT id FROM users WHERE fname = "Drew";)),
-  ("Tomorrow?", "How do I keep track of days?", (SELECT id FROM users WHERE fname = "Mike";)),
-  ("alexa", "alexa where am i", (SELECT id FROM users WHERE fname = "Drew";));
+  ("Dogs??", "What are they all about?", (SELECT id FROM users WHERE fname = "Drew")),
+  ("Tomorrow?", "How do I keep track of days?", (SELECT id FROM users WHERE fname = "Mike")),
+  ("alexa", "alexa where am i", (SELECT id FROM users WHERE fname = "Drew"));
 
 INSERT INTO
   question_follows (question_id, user_id)
