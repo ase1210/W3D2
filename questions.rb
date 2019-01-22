@@ -1,5 +1,6 @@
 require 'sqlite3'
 require 'singleton'
+require 'byebug'
 
 class QuestionsDatabase < SQLite3::Database
   include Singleton
@@ -91,13 +92,32 @@ end
 
 class QuestionFollow
 
-  def self.find_by_question(question_id)
-    data = QuestionsDatabase.instance.execute(<<-SQL, question_id)
-      SELECT *
+  # def self.find_by_question(question_id)
+  #   data = QuestionsDatabase.instance.execute(<<-SQL, question_id)
+  #     SELECT *
+  #     FROM question_follows
+  #     WHERE question_id = ?
+  #   SQL
+  #   data.map { |datum| QuestionFollow.new(datum) }
+  # end
+
+  def self.followers_for_question_id(question_id)
+    user_ids = QuestionsDatabase.instance.execute(<<-SQL, question_id)
+      SELECT user_id
       FROM question_follows
       WHERE question_id = ?
     SQL
-    data.map { |datum| QuestionFollow.new(datum) }
+    #byebug
+    user_ids.map { |user_id| User.find_by_id(user_id.values[0]) }.flatten
+  end
+
+  def self.followed_questions_for_user_id(user_id)
+    question_ids = Questiquestion_idsbase.instance.execute(<<-SQL, user_id)
+      SELECT question_id
+      FROM question_follows
+      WHERE user_id = ?
+    SQL
+    question_ids.map { |question_id| Question.find_by_id(question_id.values[0]) }.flatten
   end
 
   attr_accessor :question_id, :user_id
