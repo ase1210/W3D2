@@ -57,6 +57,14 @@ class Question
   def followers
     QuestionFollow.followers_for_question_id(@id)
   end
+
+  def likers
+    QuestionLike.likers_for_question_id(@id)
+  end
+
+  def num_likes
+    QuestionLike.num_likes_for_question_id(@id)
+  end
 end
 
 class User
@@ -97,6 +105,10 @@ class User
 
   def followed_questions
     QuestionFollow.followed_questions_for_user_id(@id)
+  end
+
+  def liked_questions
+    QuestionLike.liked_questions_for_user_id(@id)
   end
 end
 
@@ -229,6 +241,16 @@ class QuestionLike
     SQL
     return 0 if data.empty?
     data[0]['count']
+  end
+
+  def self.liked_questions_for_user_id(user_id)
+    data = QuestionsDatabase.instance.execute(<<-SQL, user_id)
+      SELECT DISTINCT questions.id, questions.title, questions.body, questions.user_id
+      FROM question_likes
+      JOIN questions ON question_likes.question_id = questions.id
+      WHERE question_likes.user_id = ?
+    SQL
+    data.map { |datum| Question.new(datum) }
   end
 
   attr_accessor :question_id, :user_id
