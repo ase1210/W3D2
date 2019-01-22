@@ -12,7 +12,7 @@ class QuestionsDatabase < SQLite3::Database
 
 end
 
-class Questions
+class Question
 
   def self.find_by_id(id)
     data = QuestionsDatabase.instance.execute(<<-SQL, id)
@@ -20,7 +20,7 @@ class Questions
       FROM questions
       WHERE id = ?
     SQL
-    data.map { |datum| Questions.new(datum) }
+    data.map { |datum| Question.new(datum) }
   end
 
   attr_accessor :title, :body, :user_id
@@ -34,7 +34,7 @@ class Questions
   
 end
 
-class Users
+class User
 
   def self.find_by_name(fname, lname)
     data = QuestionsDatabase.instance.execute(<<-SQL, fname, lname)
@@ -42,7 +42,7 @@ class Users
       FROM users
       WHERE fname = ? AND lname = ?
     SQL
-    data.map { |datum| Users.new(datum) }
+    data.map { |datum| User.new(datum) }
   end
 
   attr_accessor :fname, :lname
@@ -55,7 +55,7 @@ class Users
   
 end
 
-class QuestionFollows
+class QuestionFollow
 
   def self.find_by_question(question_id)
     data = QuestionsDatabase.instance.execute(<<-SQL, question_id)
@@ -63,7 +63,7 @@ class QuestionFollows
       FROM question_follows
       WHERE question_id = ?
     SQL
-    data.map { |datum| QuestionFollows.new(datum) }
+    data.map { |datum| QuestionFollow.new(datum) }
   end
 
   attr_accessor :question_id, :user_id
@@ -75,27 +75,7 @@ class QuestionFollows
   
 end
 
-class QuestionLikes
-
-  def self.find_by_question(question_id)
-    data = QuestionsDatabase.instance.execute(<<-SQL, question_id)
-      SELECT *
-      FROM question_likes
-      WHERE question_id = ?
-    SQL
-    data.map { |datum| QuestionLikes.new(datum) }
-  end
-
-  attr_accessor :question_id, :user_id
-
-  def initialize(options)
-    @question_id = options['question_id']
-    @user_id = options['user_id']
-  end
-  
-end
-
-class Replies
+class Reply
 
   def self.find_by_id(id)
     data = QuestionsDatabase.instance.execute(<<-SQL, id)
@@ -103,7 +83,7 @@ class Replies
       FROM replies
       WHERE id = ?
     SQL
-    data.map { |datum| Replies.new(datum) }
+    data.map { |datum| Reply.new(datum) }
   end
 
   attr_accessor :question_id, :user_id, :body, :parent_id
@@ -113,6 +93,26 @@ class Replies
     @body = options['body']
     @question_id = options['question_id']
     @parent_id = options['parent_id']
+    @user_id = options['user_id']
+  end
+  
+end
+
+class QuestionLike
+
+  def self.find_by_question(question_id)
+    data = QuestionsDatabase.instance.execute(<<-SQL, question_id)
+      SELECT *
+      FROM question_likes
+      WHERE question_id = ?
+    SQL
+    data.map { |datum| QuestionLike.new(datum) }
+  end
+
+  attr_accessor :question_id, :user_id
+
+  def initialize(options)
+    @question_id = options['question_id']
     @user_id = options['user_id']
   end
   
