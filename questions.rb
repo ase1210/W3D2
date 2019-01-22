@@ -23,6 +23,15 @@ class Question
     data.map { |datum| Question.new(datum) }
   end
 
+  def self.find_by_author(user_id)
+    data = QuestionsDatabase.instance.execute(<<-SQL, user_id)
+      SELECT *
+      FROM questions
+      WHERE user_id = ?
+    SQL
+    data.map { |datum| Question.new(datum) }
+  end
+
   attr_accessor :title, :body, :user_id
 
   def initialize(options)
@@ -30,6 +39,14 @@ class Question
     @title = options['title']
     @body = options['body']
     @user_id = options['user_id']
+  end
+
+  def author
+    User.find_by_id(user_id)
+  end
+
+  def replies
+    Reply.find_by_question_id(@id)
   end
   
 end
