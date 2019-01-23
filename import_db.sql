@@ -25,14 +25,14 @@ CREATE TABLE question_follows (
   FOREIGN KEY (question_id) REFERENCES questions(id)
 );
 
-CREATE TABLE replies (
+CREATE TABLE replys (
   id INTEGER PRIMARY KEY,
   body TEXT NOT NULL,
   question_id INTEGER NOT NULL,
   parent_id INTEGER,
   user_id INTEGER NOT NULL,
 
-  FOREIGN KEY (parent_id) REFERENCES replies(id),
+  FOREIGN KEY (parent_id) REFERENCES replys(id),
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (question_id) REFERENCES questions(id)
 );
@@ -67,7 +67,7 @@ VALUES
 
 
 INSERT INTO
-  replies (body, question_id, parent_id, user_id)
+  replys (body, question_id, parent_id, user_id)
 VALUES
   ("food.", 1, NULL, 2),
   ("doi...", 1, 1, 1),

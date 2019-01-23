@@ -13,16 +13,28 @@ class QuestionsDatabase < SQLite3::Database
 
 end
 
-class Question
-
+class ModelBase
   def self.find_by_id(id)
+    table_name = self.to_s.downcase + 's'
     data = QuestionsDatabase.instance.execute(<<-SQL, id)
       SELECT *
-      FROM questions
+      FROM #{table_name}
       WHERE id = ?
     SQL
-    data.map { |datum| Question.new(datum) }
+    data.map { |datum| self.new(datum) }
   end
+end
+
+class Question < ModelBase
+
+  # def self.find_by_id(id)
+  #   data = QuestionsDatabase.instance.execute(<<-SQL, id)
+  #     SELECT *
+  #     FROM questions
+  #     WHERE id = ?
+  #   SQL
+  #   data.map { |datum| Question.new(datum) }
+  # end
 
   def self.find_by_author_id(user_id)
     data = QuestionsDatabase.instance.execute(<<-SQL, user_id)
@@ -215,7 +227,7 @@ class Reply
   def self.find_by_id(id)
     data = QuestionsDatabase.instance.execute(<<-SQL, id)
       SELECT *
-      FROM replies
+      FROM replys
       WHERE id = ?
     SQL
     data.map { |datum| Reply.new(datum) }
@@ -224,7 +236,7 @@ class Reply
   def self.find_by_parent_id(parent_id)
     data = QuestionsDatabase.instance.execute(<<-SQL, parent_id)
       SELECT *
-      FROM replies
+      FROM replys
       WHERE parent_id = ?
     SQL
     data.map { |datum| Reply.new(datum) }
@@ -233,7 +245,7 @@ class Reply
   def self.find_by_user_id(user_id)
     data = QuestionsDatabase.instance.execute(<<-SQL, user_id)
       SELECT *
-      FROM replies
+      FROM replys
       WHERE user_id = ?
     SQL
     data.map { |datum| Reply.new(datum) }
@@ -242,7 +254,7 @@ class Reply
   def self.find_by_question_id(question_id)
     data = QuestionsDatabase.instance.execute(<<-SQL, question_id)
       SELECT *
-      FROM replies
+      FROM replys
       WHERE question_id = ?
     SQL
     data.map { |datum| Reply.new(datum) }
